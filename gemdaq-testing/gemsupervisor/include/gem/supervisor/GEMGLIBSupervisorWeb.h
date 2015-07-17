@@ -45,175 +45,189 @@
 typedef uhal::exception::exception uhalException;
 
 namespace gem {
-    namespace hw {
-        namespace vfat {
-            class HwVFAT2;
-        }   
+  namespace hw {
+    namespace vfat {
+      class HwVFAT2;
     }
-    namespace supervisor {
+  }
+  namespace readout {
+    class GEMDataParker;
+  }
 
-        class GEMGLIBSupervisorWeb: public xdaq::WebApplication
-        {
-            public:
-                XDAQ_INSTANTIATOR();
+  namespace supervisor {
 
-                GEMGLIBSupervisorWeb(xdaq::ApplicationStub * s)
-                    throw (xdaq::exception::Exception);
+    class GEMGLIBSupervisorWeb: public xdaq::WebApplication
+      {
+      public:
 
-                // SOAP interface
-                xoap::MessageReference onConfigure(xoap::MessageReference message)
-                    throw (xoap::exception::Exception);
-                xoap::MessageReference onStart(xoap::MessageReference message)
-                    throw (xoap::exception::Exception);
-                xoap::MessageReference onStop(xoap::MessageReference message)
-                    throw (xoap::exception::Exception);
-                xoap::MessageReference onHalt(xoap::MessageReference message)
-                    throw (xoap::exception::Exception);
+	XDAQ_INSTANTIATOR();
 
-                // HyperDAQ interface
-                /**
-                *    Generate main web interface
-                */
-                void webDefault(xgi::Input *in, xgi::Output *out)
-                    throw (xgi::exception::Exception);
-                /**
-                *    Initiate configuration workloop and return to main web interface
-                */
-                void webConfigure(xgi::Input *in, xgi::Output *out)
-                    throw (xgi::exception::Exception);
-                /**
-                *    Initiate start workloop and return to main web interface
-                */
-                void webStart(xgi::Input *in, xgi::Output *out)
-                    throw (xgi::exception::Exception);
-                /**
-                *    Initiate stop workloop and return to main web interface
-                */
-                void webStop(xgi::Input *in, xgi::Output *out)
-                    throw (xgi::exception::Exception);
-                /**
-                *    Initiate halt workloop and return to main web interface
-                */
-                void webHalt(xgi::Input *in, xgi::Output *out)
-                    throw (xgi::exception::Exception);
-                /**
-                *    Send L1A signal and return to main web interface
-                */
-                void webTrigger(xgi::Input *in, xgi::Output *out)
-                    throw (xgi::exception::Exception);
-                /**
-                *    Redirect to main web interface
-                */
-                void webRedirect(xgi::Input *in, xgi::Output *out)
-                    throw (xgi::exception::Exception);
+	GEMGLIBSupervisorWeb(xdaq::ApplicationStub * s)
+	  throw (xdaq::exception::Exception);
 
-                // work loop call-back functions
-                /**
-                *    Fire configure action to FSM
-                */
-                bool configureAction(toolbox::task::WorkLoop *wl);
-                /**
-                *    Fire start action to FSM
-                */
-                bool startAction(toolbox::task::WorkLoop *wl);
-                /**
-                *    Fire stop action to FSM
-                */
-                bool stopAction(toolbox::task::WorkLoop *wl);
-                /**
-                *    Fire halt action to FSM
-                */
-                bool haltAction(toolbox::task::WorkLoop *wl);
-                /**
-                *    Check if GLIB has any data available
-                *    If it does, initiate read workloop
-                */
-                bool runAction(toolbox::task::WorkLoop *wl);
-                /**
-                *    Dump to disk all data available in GLIB data buffer
-                */
-                bool readAction(toolbox::task::WorkLoop *wl);
+	void setParameter(xgi::Input * in, xgi::Output * out ) 
+	  throw (xgi::exception::Exception);
 
-                // State transitions
-                /**
-                *    Prepare the system to data acquisition:
-                *      - Write predefined values to VFAT2 registers
-                *      - Create a new output file
-                */
-                void configureAction(toolbox::Event::Reference e)
-                    throw (toolbox::fsm::exception::Exception);
-                /**
-                *    Prepare Opto-hybrid Board and GLIB to data acquisition
-                */
-                void startAction(toolbox::Event::Reference e)
-                    throw (toolbox::fsm::exception::Exception);
-                /**
-                *    Action during transition to "Stopped" state
-                */
-                void stopAction(toolbox::Event::Reference e)
-                    throw (toolbox::fsm::exception::Exception);
-                /*
-                *    Action during transition to "Halted" state
-                */
-                void haltAction(toolbox::Event::Reference e)
-                    throw (toolbox::fsm::exception::Exception);
-                /*
-                *    Empty action for forbidden state transitions in FSM
-                */
-                void noAction(toolbox::Event::Reference e)
-                    throw (toolbox::fsm::exception::Exception);
+	// SOAP interface
+	xoap::MessageReference onConfigure(xoap::MessageReference message)
+	  throw (xoap::exception::Exception);
+	xoap::MessageReference onStart(xoap::MessageReference message)
+	  throw (xoap::exception::Exception);
+	xoap::MessageReference onStop(xoap::MessageReference message)
+	  throw (xoap::exception::Exception);
+	xoap::MessageReference onHalt(xoap::MessageReference message)
+	  throw (xoap::exception::Exception);
 
-                class ConfigParams 
-                {   
-                    public:
-                        void registerFields(xdata::Bag<ConfigParams> *bag);
+	// HyperDAQ interface
+	/**
+	 *    Generate main web interface
+	 */
+	void webDefault(xgi::Input *in, xgi::Output *out)
+	  throw (xgi::exception::Exception);
+	/**
+	 *    Initiate configuration workloop and return to main web interface
+	 */
+	void webConfigure(xgi::Input *in, xgi::Output *out)
+	  throw (xgi::exception::Exception);
+	/**
+	 *    Initiate start workloop and return to main web interface
+	 */
+	void webStart(xgi::Input *in, xgi::Output *out)
+	  throw (xgi::exception::Exception);
+	/**
+	 *    Initiate stop workloop and return to main web interface
+	 */
+	void webStop(xgi::Input *in, xgi::Output *out)
+	  throw (xgi::exception::Exception);
+	/**
+	 *    Initiate halt workloop and return to main web interface
+	 */
+	void webHalt(xgi::Input *in, xgi::Output *out)
+	  throw (xgi::exception::Exception);
+	/**
+	 *    Send L1A signal and return to main web interface
+	 */
+	void webTrigger(xgi::Input *in, xgi::Output *out)
+	  throw (xgi::exception::Exception);
+	/**
+	 *    Redirect to main web interface
+	 */
+	void webRedirect(xgi::Input *in, xgi::Output *out)
+	  throw (xgi::exception::Exception);
 
-                        xdata::UnsignedInteger latency;
+	// work loop call-back functions
+	/**
+	 *    Fire initialize action to FSM
+	 */
+	bool initializeAction(toolbox::task::WorkLoop *wl);
+	/**
+	 *    Fire configure action to FSM
+	 */
+	bool configureAction(toolbox::task::WorkLoop *wl);
+	/**
+	 *    Fire start action to FSM
+	 */
+	bool startAction(toolbox::task::WorkLoop *wl);
+	/**
+	 *    Fire stop action to FSM
+	 */
+	bool stopAction(toolbox::task::WorkLoop *wl);
+	/**
+	 *    Fire halt action to FSM
+	 */
+	bool haltAction(toolbox::task::WorkLoop *wl);
+	/**
+	 *    Check if GLIB has any data available
+	 *    If it does, initiate read workloop
+	 */
+	bool runAction(toolbox::task::WorkLoop *wl);
+	/**
+	 *    Dump to disk all data available in GLIB data buffer
+	 */
+	bool readAction(toolbox::task::WorkLoop *wl);
 
-                        xdata::String        outFileName;
+	// State transitions
+	/**
+	 *    Prepare the system to data acquisition:
+	 *      - Write predefined values to VFAT2 registers
+	 *      - Create a new output file
+	 */
+	void configureAction(toolbox::Event::Reference e)
+	  throw (toolbox::fsm::exception::Exception);
+	/**
+	 *    Prepare Opto-hybrid Board and GLIB to data acquisition
+	 */
+	void startAction(toolbox::Event::Reference e)
+	  throw (toolbox::fsm::exception::Exception);
+	/**
+	 *    Action during transition to "Stopped" state
+	 */
+	void stopAction(toolbox::Event::Reference e)
+	  throw (toolbox::fsm::exception::Exception);
+	/**
+	 *    Action during transition to "Halted" state
+	 */
+	void haltAction(toolbox::Event::Reference e)
+	  throw (toolbox::fsm::exception::Exception);
+	/**
+	 *    Empty action for forbidden state transitions in FSM
+	 */
+	void noAction(toolbox::Event::Reference e)
+	  throw (toolbox::fsm::exception::Exception);
 
-                        xdata::String        deviceName;
-                        xdata::String        deviceIP;
-                        xdata::Integer       deviceNum;
-                        xdata::UnsignedShort triggerSource;
-                        xdata::UnsignedShort deviceChipID;
-                        xdata::UnsignedShort deviceVT1;
-                        xdata::UnsignedShort deviceVT2;
-                };
+	class ConfigParams 
+	{   
+	public:
+	  void registerFields(xdata::Bag<ConfigParams> *bag);
 
-            private:
-                toolbox::task::WorkLoop *wl_;
+	  xdata::String          deviceIP;
+	  xdata::String          outFileName;
+	  xdata::String          outputType;
+	  xdata::String          deviceName[24];
+	  xdata::Integer         deviceNum[24];
 
-                toolbox::BSem wl_semaphore_;
-                toolbox::BSem hw_semaphore_;
+	  xdata::UnsignedInteger latency;
+	  xdata::UnsignedShort   triggerSource;
+	  xdata::UnsignedShort   deviceChipID;
+	  xdata::UnsignedShort   deviceVT1;
+	  xdata::UnsignedShort   deviceVT2;
+	};
 
-                toolbox::task::ActionSignature *configure_signature_;
-                toolbox::task::ActionSignature *stop_signature_;
-                toolbox::task::ActionSignature *halt_signature_;
-                toolbox::task::ActionSignature *start_signature_;
-                toolbox::task::ActionSignature *run_signature_;
-                toolbox::task::ActionSignature *read_signature_;
+      private:
 
-                toolbox::fsm::FiniteStateMachine fsm_;
+	log4cplus::Logger gemLogger_;
+	
+	toolbox::task::WorkLoop *wl_;
 
-                xdata::Bag<ConfigParams> confParams_;
+	toolbox::BSem wl_semaphore_;
+	toolbox::BSem hw_semaphore_;
 
-                FILE* outputFile;
+	toolbox::task::ActionSignature *configure_signature_;
+	toolbox::task::ActionSignature *stop_signature_;
+	toolbox::task::ActionSignature *halt_signature_;
+	toolbox::task::ActionSignature *start_signature_;
+	toolbox::task::ActionSignature *run_signature_;
+	toolbox::task::ActionSignature *read_signature_;
 
-                uint64_t latency_;
+	toolbox::fsm::FiniteStateMachine fsm_;
 
-                bool is_working_, is_initialized_, is_configured_, is_running_;
+	xdata::Bag<ConfigParams> confParams_;
 
-                gem::hw::vfat::HwVFAT2* vfatDevice_;
+	FILE* outputFile;
+	uint64_t latency_;
+	bool is_working_, is_initialized_, is_configured_, is_running_;
 
-                int counter_;
+	gem::hw::vfat::HwVFAT2* vfatDevice_;
+	gem::readout::GEMDataParker* gemDataParker;
 
-                void fireEvent(std::string name);
-                void stateChanged(toolbox::fsm::FiniteStateMachine &fsm)
-                    throw (toolbox::fsm::exception::Exception);
-                void transitionFailed(toolbox::Event::Reference event)
-                    throw (toolbox::fsm::exception::Exception);
-        };
-    }
+	int counter_;
+
+	void fireEvent(std::string name);
+	void stateChanged(toolbox::fsm::FiniteStateMachine &fsm)
+	  throw (toolbox::fsm::exception::Exception);
+	void transitionFailed(toolbox::Event::Reference event)
+	  throw (toolbox::fsm::exception::Exception);
+      };
+  }
 }
 #endif
